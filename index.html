@@ -5,12 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Baby Names</title>
+  <style>
+    body {
+      margin: 0 auto;
+      width: 80%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 5rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    button {
+      padding: 20px 40px;
+      border-radius: 3000px;
+      font-size: 26px;
+      margin: 10px 20px;
+    }
+
+  </style>
 </head>
 <body>
-  <h1>Hello</h1>
-  <button>New Name</button>
+  <h1 id="displayName">Billie</h1>
+  <button onclick="postGirlName()">Girl Name</button>
+  <button onclick="postBoyName()">Boy Name</button>
+  <p>Use left arrow for girl name, right arrow for boy.</p>
   <script type="text/javascript">
-    console.log('here');
+  const boyNamesUrls = [
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/boy_names_2012.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/boy_names_2013.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/boy_names_2014.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/boy_names_2015.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/boy_names_2016.json'
+  ];
+  const girlNamesUrls = [
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/girl_names_2012.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/girl_names_2013.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/girl_names_2014.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/girl_names_2015.json',
+    'https://raw.githubusercontent.com/aruljohn/popular-baby-names/master/girl_names_2016.json'
+  ];
+
+  let boysNames = [];
+  const getAllNames = async (urls) => {
+    let allNames = [];
+    await Promise.all(urls.map(url => fetch(url).then(res => res.json()).then(({names}) => names)))
+      .then((names) => {
+        allNames = names.flat();
+        return allNames
+      });
+    return allNames;
+  }
+  let boyNames, girlNames;
+
+  (async () => {
+    boyNames = await getAllNames(boyNamesUrls);
+    girlNames = await getAllNames(girlNamesUrls);
+  })();
+
+  const nameElement = document.getElementById('displayName');
+  const postGirlName = () => {
+    const name = girlNames[Math.floor(Math.random() * (girlNames.length - 1))]
+    nameElement.innerHTML = name;
+  };
+  const postBoyName = () => {
+    const name = boyNames[Math.floor(Math.random() * (boyNames.length - 1))]
+    nameElement.innerHTML = name;
+  };
+
+  document.addEventListener('keyup', ({key}) => {
+    if(key === 'ArrowRight') {
+      postBoyName();
+    }
+    if(key === 'ArrowLeft') {
+      postGirlName();
+    }
+  });
 
   </script>
 </body>
